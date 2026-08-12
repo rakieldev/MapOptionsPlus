@@ -1,5 +1,5 @@
 -- MapOptionsPlus: New powerful parameters for Options menu items.
--- Version: 1.0
+-- Version: 1.0.1
 -- Date: 12/08/2026
 -- Author: Rakíel
 -- Compatible with: Ikemen GO 1.0
@@ -240,9 +240,15 @@ end
 -- Apply maps
 -------------------------------------------------------------
 function mapoptions.apply()
-	for itemName, definition in pairs(definitions) do
-		mapSet(definition.name, values[itemName])
+	local maxPlayer = 12
+	for p = 1, maxPlayer do
+		if player(p) ~= nil then
+			for itemName, definition in pairs(definitions) do
+				mapSet(definition.name, values[itemName])
+			end
+		end
 	end
+
 	hook.stop('loop', 'mapoptions')
 end
 
