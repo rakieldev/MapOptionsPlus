@@ -1,0 +1,11 @@
+; Define the menu items in [Option Info] using "menu.itemname.<optionName>".
+; These items can then be configured using the parameters provided in config.ini.
+; See the Ikemen GO documentation for more information about menu item grouping:
+; https://github.com/ikemen-engine/Ikemen-GO/wiki/Screenpack-features#submenus-grouping
+
+[Option Info]
+menu.itemname.mapoptionsplus = Map Options Plus
+menu.itemname.mapoptionsplus.booltest = Bool Test
+menu.itemname.mapoptionsplus.inttest = Int Test
+menu.itemname.mapoptionsplus.floattest = Float Test
+menu.itemname.mapoptionsplus.labeltest = Label Test
