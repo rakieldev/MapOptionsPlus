@@ -1,6 +1,6 @@
 -- MapOptionsPlus: New powerful parameters for Options menu items.
--- Version: 1.0.1
--- Date: 12/08/2026
+-- Version: 1.0.2
+-- Date: 13/08/2026
 -- Author: Rakíel
 -- Compatible with: Ikemen GO 1.0
 -- Description: This module lets you create Options menu items that set map values for all players when starting a new match.
@@ -9,7 +9,7 @@
 -------------------------------------------------------------
 -- MapOptionsPlus
 -------------------------------------------------------------
-local mapoptions = {}
+local mapOptions = {}
 local configPath = 'external/mods/mapOptionsPlus/config.ini'
 local config = loadIni(configPath, false)
 
@@ -239,26 +239,23 @@ end
 -------------------------------------------------------------
 -- Apply maps
 -------------------------------------------------------------
-function mapoptions.apply()
+function mapOptions.apply()
 	local maxPlayer = 12
 	for p = 1, maxPlayer do
 		if player(p) ~= nil then
 			for itemName, definition in pairs(definitions) do
-				mapSet(definition.name, values[itemName])
+				local value = values[itemName]
+				if map(definition.name) ~= value then
+					mapSet(definition.name, value)
+				end
 			end
 		end
 	end
-
-	hook.stop('loop', 'mapoptions')
 end
-
 -------------------------------------------------------------
 -- Initialization
 -------------------------------------------------------------
 loadMapOptions()
-local function initialize()
-	hook.add('loop', 'mapoptions', mapoptions.apply)
-end
+hook.add('loop', 'mapoptions', mapOptions.apply)
 hook.add('options.default', 'mapoptions', resetMapOptions)
-hook.add('launchFight', 'mapoptions_initialize', initialize)
 hook.add('options.save', 'mapoptions', saveMapOptions)
