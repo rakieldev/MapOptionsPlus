@@ -1,6 +1,6 @@
 -- MapOptionsPlus: New powerful parameters for Options menu items.
--- Version: 1.0.2
--- Date: 13/08/2026
+-- Version: 1.1
+-- Date: 17/08/2026
 -- Author: Rakíel
 -- Compatible with: Ikemen GO 1.0
 -- Description: This module lets you create Options menu items that set map values for all players when starting a new match.
@@ -103,14 +103,24 @@ end
 local function createBoolOption(name)
 	local itemName = name:lower()
 
+	local function toggle()
+		values[itemName] = values[itemName] == 0 and 1 or 0
+	end
 	options.t_itemname[itemName] = function(t, item, cursorPosY, moveTxt)
-		if getInput(-1,motif.option_info.menu.add.key, motif.option_info.menu.subtract.key, motif.option_info.menu.done.key) then
+		if getInput(-1, motif.option_info.menu.add.key, motif.option_info.menu.subtract.key, motif.option_info.menu.done.key) then
 			sndPlay(motif.Snd, motif.option_info.cursor.move.snd[1], motif.option_info.cursor.move.snd[2])
-			values[itemName] = values[itemName] == 0 and 1 or 0
+			toggle()
 			t.items[item].vardisplay = options.t_vardisplay[itemName]()
 			options.modified = true
 		end
-
+		return true
+	end
+	menu.t_itemname[itemName] = function(t, item, cursorPosY, moveTxt, sec)
+		if getInput(-1, sec.menu.add.key, sec.menu.subtract.key) then
+			sndPlay(motif.Snd, sec.cursor.move.snd[1], sec.cursor.move.snd[2])
+			toggle()
+			t.items[item].vardisplay = menu.f_vardisplay(itemName)
+		end
 		return true
 	end
 
@@ -127,24 +137,51 @@ local function createNumberOption(name, definition)
 	local itemName = name:lower()
 	local step = definition.type == 'float' and 0.1 or 1
 
+	local function changeValue(direction)
+		local value = values[itemName] + step * direction
+
+		if value >= definition.rangeStart and value <= definition.rangeEnd then
+			values[itemName] = value
+
+			if definition.type == 'float' then
+				values[itemName] = roundFloat(values[itemName])
+			end
+
+			return true
+		end
+
+		return false
+	end
+
 	options.t_itemname[itemName] = function(t, item, cursorPosY, moveTxt)
-		if getInput(-1,motif.option_info.menu.add.key) and values[itemName] < definition.rangeEnd then
-			sndPlay(motif.Snd, motif.option_info.cursor.move.snd[1], motif.option_info.cursor.move.snd[2])
-			values[itemName] = values[itemName] + step
-			if definition.type == 'float' then
-				values[itemName] = roundFloat(values[itemName])
+		if getInput(-1, motif.option_info.menu.add.key) then
+			if changeValue(1) then
+				sndPlay(motif.Snd, motif.option_info.cursor.move.snd[1], motif.option_info.cursor.move.snd[2])
+				t.items[item].vardisplay = options.t_vardisplay[itemName]()
+				options.modified = true
 			end
-			t.items[item].vardisplay = options.t_vardisplay[itemName]()
-			options.modified = true
-		elseif getInput(-1, motif.option_info.menu.subtract.key)
-			and values[itemName] > definition.rangeStart then
-			sndPlay(motif.Snd, motif.option_info.cursor.move.snd[1], motif.option_info.cursor.move.snd[2])
-			values[itemName] = values[itemName] - step
-			if definition.type == 'float' then
-				values[itemName] = roundFloat(values[itemName])
+		elseif getInput(-1, motif.option_info.menu.subtract.key) then
+			if changeValue(-1) then
+				sndPlay(motif.Snd, motif.option_info.cursor.move.snd[1], motif.option_info.cursor.move.snd[2])
+				t.items[item].vardisplay = options.t_vardisplay[itemName]()
+				options.modified = true
 			end
-			t.items[item].vardisplay = options.t_vardisplay[itemName]()
-			options.modified = true
+		end
+
+		return true
+	end
+
+	menu.t_itemname[itemName] = function(t, item, cursorPosY, moveTxt, sec)
+		if getInput(-1, sec.menu.add.key) then
+			if changeValue(1) then
+				sndPlay(motif.Snd, sec.cursor.move.snd[1], sec.cursor.move.snd[2])
+				t.items[item].vardisplay = menu.f_vardisplay(itemName)
+			end
+		elseif getInput(-1, sec.menu.subtract.key) then
+			if changeValue(-1) then
+				sndPlay(motif.Snd, sec.cursor.move.snd[1], sec.cursor.move.snd[2])
+				t.items[item].vardisplay = menu.f_vardisplay(itemName)
+			end
 		end
 
 		return true
@@ -236,6 +273,24 @@ local function saveMapOptions()
 	file:close()
 end
 
+-- Pause menu only
+local function resetMapOptions()
+	for itemName, definition in pairs(definitions) do
+		values[itemName] = definition.default
+	end
+end
+
+menu.t_itemname['mapoptionsdefault'] = function(t, item, cursorPosY, moveTxt, sec)
+	if getInput(-1, sec.menu.done.key) then
+		sndPlay(motif.Snd, sec.cursor.done.snd[1], sec.cursor.done.snd[2])
+		resetMapOptions()
+
+		for _, v in ipairs(menu.t_vardisplayPointers) do
+			v.vardisplay = menu.f_vardisplay(v.itemname)
+		end
+	end
+	return true
+end
 -------------------------------------------------------------
 -- Apply maps
 -------------------------------------------------------------

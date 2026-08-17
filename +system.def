@@ -1,4 +1,5 @@
-; Define the menu items in [Option Info] using "menu.itemname.<optionName>".
+; Define the menu items in the appropriate menu section using "menu.itemname.<optionName>".
+; Map Options Plus can be used in the main Options menu or in-game pause menus.
 ; These items can then be configured using the parameters provided in config.ini.
 ; See the Ikemen GO documentation for more information about menu item grouping:
 ; https://github.com/ikemen-engine/Ikemen-GO/wiki/Screenpack-features#submenus-grouping
@@ -9,3 +10,21 @@ menu.itemname.mapoptionsplus.booltest = Bool Test
 menu.itemname.mapoptionsplus.inttest = Int Test
 menu.itemname.mapoptionsplus.floattest = Float Test
 menu.itemname.mapoptionsplus.labeltest = Label Test
+
+[Pause Menu]
+menu.itemname.mapoptionsplus = Map Options Plus
+menu.itemname.mapoptionsplus.booltest = Bool Test
+menu.itemname.mapoptionsplus.inttest = Int Test
+menu.itemname.mapoptionsplus.floattest = Float Test
+menu.itemname.mapoptionsplus.labeltest = Label Test
+menu.itemname.mapoptionsplus.spacer = -
+menu.itemname.mapoptionsplus.mapoptionsdefault = Default Maps
+
+[Training Pause Menu]
+menu.itemname.menutraining.mapoptionsplus = Map Options Plus
+menu.itemname.menutraining.mapoptionsplus.booltest = Bool Test
+menu.itemname.menutraining.mapoptionsplus.inttest = Int Test
+menu.itemname.menutraining.mapoptionsplus.floattest = Float Test
+menu.itemname.menutraining.mapoptionsplus.labeltest = Label Test
+menu.itemname.menutraining.mapoptionsplus.spacer = -
+menu.itemname.menutraining.mapoptionsplus.mapoptionsdefault = Default Maps
