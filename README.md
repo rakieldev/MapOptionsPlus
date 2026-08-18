@@ -43,6 +43,17 @@ IntTest = int, 0, 10, 5
 FloatTest = float, 0.5, 3.0, 1.5
 ```
 
+### Custom Map Names
+
+By default, the map name is the same as the option name. An optional map name can be specified after the option type.
+
+```ini
+BoolTest = bool, _a_bool_map, 1
+IntTest = int, a.int.map, 0, 10, 5
+```
+
+Custom map names can also be used with integer options that have custom labels.
+
 ### Custom Labels
 
 Integer options can optionally use custom labels instead of displaying their numeric values. Labels are assigned in order, starting from the minimum value.
@@ -70,7 +81,6 @@ If no label is provided for a value, the numeric value is displayed instead.
 BoolTest = bool, 1
 IntTest = int, 0, 10, 5
 FloatTest = float, 0.5, 3.0, 1.5
-LabelTest = int, 0, 3, 0 | Value 1, Value 2, Value 3, Value 4
 ```
 
 ## `+system.def`

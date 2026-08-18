@@ -1,6 +1,6 @@
 -- MapOptionsPlus: New powerful parameters for Options menu items.
--- Version: 1.1
--- Date: 17/08/2026
+-- Version: 1.1.1
+-- Date: 18/08/2026
 -- Author: Rakíel
 -- Compatible with: Ikemen GO 1.0
 -- Description: This module lets you create Options menu items that set map values for all players when starting a new match.
@@ -29,23 +29,31 @@ end
 local function parseDefinition(name, params)
 	local itemName = name:lower()
 	local optionType = params[1]
+	local mapName = name
+	local offset = 0
 	local labels = nil
 
-	if optionType == 'int' and type(params[4]) == 'string' then
-		local firstValue, firstLabel = params[4]:match('^(.-)%s*|%s*(.*)$')
+	-- Optional map name.
+	if tonumber(params[2]) == nil then
+		mapName = params[2]
+		offset = 1
+	end
+
+	if optionType == 'int' and type(params[4 + offset]) == 'string' then
+		local firstValue, firstLabel = params[4 + offset]:match('^(.-)%s*|%s*(.*)$')
 
 		if firstValue ~= nil then
-			params[4] = tonumber(firstValue)
+			params[4 + offset] = tonumber(firstValue)
 			labels = {trim(firstLabel)}
 
-			for i = 5, #params do
+			for i = 5 + offset, #params do
 				labels[#labels + 1] = trim(params[i])
 			end
 		end
 	end
 
 	if optionType == 'bool' then
-		local default = tonumber(params[2])
+		local default = tonumber(params[2 + offset])
 
 		if default == nil then
 			default = 0
@@ -55,6 +63,7 @@ local function parseDefinition(name, params)
 
 		definitions[itemName] = {
 			name = name,
+			mapName = mapName,
 			type = 'bool',
 			default = default,
 		}
@@ -62,9 +71,9 @@ local function parseDefinition(name, params)
 		values[itemName] = default
 
 	elseif optionType == 'int' or optionType == 'float' then
-		local rangeStart = tonumber(params[2])
-		local rangeEnd = tonumber(params[3])
-		local default = tonumber(params[4])
+		local rangeStart = tonumber(params[2 + offset])
+		local rangeEnd = tonumber(params[3 + offset])
+		local default = tonumber(params[4 + offset])
 
 		if rangeStart == nil then
 			rangeStart = 0
@@ -86,6 +95,7 @@ local function parseDefinition(name, params)
 
 		definitions[itemName] = {
 			name = name,
+			mapName = mapName,
 			type = optionType,
 			rangeStart = rangeStart,
 			rangeEnd = rangeEnd,
@@ -300,8 +310,8 @@ function mapOptions.apply()
 		if player(p) ~= nil then
 			for itemName, definition in pairs(definitions) do
 				local value = values[itemName]
-				if map(definition.name) ~= value then
-					mapSet(definition.name, value)
+				if map(definition.mapName, value) ~= value then
+					mapSet(definition.mapName, value)
 				end
 			end
 		end
